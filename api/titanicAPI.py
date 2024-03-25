@@ -1,57 +1,23 @@
-# Import necessary libraries for the web API, data manipulation, and machine learning
-from flask import Flask, request, jsonify, Blueprint
-from flask_cors import CORS  # Import CORS class from flask_cors
-import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-from model.titanicmodel import dt, logreg, enc, cols
+from flask import Blueprint, request, jsonify, current_app, Response
+from flask_restful import Api, Resource # used for REST API building
 
-# Initialize a Flask application
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+from model.titanicmodel import TitanicRegression
 
-# Create a Blueprint for the Titanic API to structure your endpoints
-titanic_api = Blueprint('titanic_api', __name__, url_prefix='/api/titanic')
+titanic_api = Blueprint('titanic_api', __name__,
+                   url_prefix='/api/titanic')
 
-# Define a route for predicting survival on the Titanic using a POST request
-@titanic_api.route('/predict', methods=['POST'])
-def predict():
-    try:
-        # Extract the features from the JSON body of the request
-        data = request.get_json(force=True)
-        features = pd.DataFrame(data, index=[0])
+# API docs https://flask-restful.readthedocs.io/en/latest/api.html
+api = Api(titanic_api)
 
-        # Apply one-hot encoding to the 'embarked' column as done during model training
-        # This converts categorical 'embarked' values into a format the model can understand
-        onehot = enc.transform(features[['embarked']]).toarray()
-        features = features.join(pd.DataFrame(onehot, columns=cols))
-        features.drop(['embarked'], axis=1, inplace=True)
+# Initialize the model
+titanic_model = TitanicRegression()
 
-        # Fill in any missing values to avoid "Input contains NaN" errors.
-        # Replace this with your specific strategy used during model training (mean, median, mode, or a constant value)
-        # Example: features.fillna(0, inplace=True)
+class TitanicApi:        
+    class _CRUD(Resource): 
+        def post(self):
+            data = request.get_json()
+            # print(data)
+            alive_prob = titanic_model.predictSurvival(data)
+            return jsonify(alive_prob)
 
-        # Predict with both models and get the survival probability
-        prediction_dt_proba = dt.predict_proba(features)[:, 1]  # Extract probabilities for class 1
-        prediction_logreg_proba = logreg.predict_proba(features)[:, 1]  # Extract probabilities for class 1
-
-        survival_probability_dt = prediction_dt_proba[0] if prediction_dt_proba.shape[0] > 0 else 'N/A'
-        survival_probability_logreg = prediction_logreg_proba[0] if prediction_logreg_proba.shape[0] > 0 else 'N/A'
-
-        # Return both predictions as percentages in JSON format
-        return jsonify({
-            'DecisionTreeClassifier Survival Probability': f"{survival_probability_dt:.2%}",
-            'LogisticRegression Survival Probability': f"{survival_probability_logreg:.2%}"
-        })
-    except Exception as e:
-        # If an error occurs, return the error message in JSON format
-        return jsonify({'error': str(e)})
-
-# This code to register the blueprint with the main Flask app is commented out because it should be uncommented and used
-# when you're integrating this blueprint into your main Flask application.
-# app.register_blueprint(titanic_api)
-
-# This part ensures that the Flask app runs only if this script is executed directly
-if __name__ == '__main__':
-    app.run(debug=True)  # Run the application with debug mode on
+    api.add_resource(_CRUD, '/')
