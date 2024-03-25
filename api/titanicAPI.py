@@ -1,5 +1,6 @@
 # Import necessary libraries for the web API, data manipulation, and machine learning
 from flask import Flask, request, jsonify, Blueprint
+from flask_cors import CORS  # Import CORS class from flask_cors
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
@@ -8,6 +9,7 @@ from model.titanicmodel import dt, logreg, enc, cols
 
 # Initialize a Flask application
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Create a Blueprint for the Titanic API to structure your endpoints
 titanic_api = Blueprint('titanic_api', __name__, url_prefix='/api/titanic')
@@ -31,11 +33,11 @@ def predict():
         # Example: features.fillna(0, inplace=True)
 
         # Predict with both models and get the survival probability
-        prediction_dt_proba = dt.predict_proba(features)
-        prediction_logreg_proba = logreg.predict_proba(features)
+        prediction_dt_proba = dt.predict_proba(features)[:, 1]  # Extract probabilities for class 1
+        prediction_logreg_proba = logreg.predict_proba(features)[:, 1]  # Extract probabilities for class 1
 
-        survival_probability_dt = prediction_dt_proba[0][1]  # Decision Tree survival probability
-        survival_probability_logreg = prediction_logreg_proba[0][1]  # Logistic Regression survival probability
+        survival_probability_dt = prediction_dt_proba[0] if prediction_dt_proba.shape[0] > 0 else 'N/A'
+        survival_probability_logreg = prediction_logreg_proba[0] if prediction_logreg_proba.shape[0] > 0 else 'N/A'
 
         # Return both predictions as percentages in JSON format
         return jsonify({
