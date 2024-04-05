@@ -14,6 +14,7 @@ from api.user import user_api # Blueprint import api definition
 from api.player import player_api
 from api.baking import baking_api
 from api.titanicAPI import titanic_api
+from api.satgpacross import satgpacross_api
 # database migrations
 from model.users import initUsers
 from model.players import initPlayers
@@ -31,6 +32,7 @@ app.register_blueprint(player_api)
 app.register_blueprint(baking_api)
 app.register_blueprint(app_projects) # register app pages
 app.register_blueprint(titanic_api)
+app.register_blueprint(satgpacross_api)
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
