@@ -12,7 +12,7 @@ class SATtoGPAModel:
     ):
         self.model = None
         self.dt = None
-        self.features = ['SAT Score', 'Grade Point Average']  # Removed 'id' and 'diet'
+        self.features = ['SAT Score', 'Grade Point Average']
         self.target = 'Grade Point Average'
         self.encoder = OneHotEncoder(handle_unknown='ignore')
         self.satscore_data = pd.DataFrame([])  # Initialize as an empty DataFrame
