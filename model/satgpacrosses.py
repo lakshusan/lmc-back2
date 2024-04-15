@@ -28,7 +28,7 @@ class SATtoGPAModel:
         self._train()  # Train the model after cleaning
 
     def _init_satscore_data(self):
-        df = pd.read_csv("datasets/sattogpa.csv")
+        df = pd.read_csv("sattogpa.csv")
         self.satscore_data = pd.DataFrame(df)  # Convert df to DataFrame
 
     def _clean(self):
@@ -66,3 +66,72 @@ class SATtoGPAModel:
         # Get the probability estimates for the positive class (index 1)
         gpa_estimate = self.model.predict(person_df)[0]  # Assuming the GPA is directly predicted
         return {'GPA_estimate': gpa_estimate}
+
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import LabelEncoder
+
+''' Tutorial: https://www.sqlalchemy.org/library.html#tutorials, try to get into Python shell and follow along '''
+
+df = pd.read_csv('sattogpa.csv')
+dataList = ['SAT Score' 'Grade Point Average']
+labelencoder = LabelEncoder()
+X = df.drop(columns=['SAT Score'])
+y = df['Grade Point Average']
+regressor = RandomForestRegressor(n_estimators=10, random_state=42)
+regressor.fit(X, y)
+
+def stringToInt(var):
+    if var == 'yes':
+        var = 1
+    elif var == 'no':
+        var = 0
+    else:
+        var = int(var)
+    return var
+
+class SATtoGPAModel():
+    def __init__(self, satscore, GPA):
+        self._satscore = satscore
+        self._GPA = GPA
+
+    @property
+    def satscore(self):
+        return self._satscore
+
+    @satscore.setter
+    def satscore(self, value):
+        self._satscore = value
+
+    @property
+    def GPA(self):
+        return self._GPA
+
+    @GPA.setter
+    def GPA(self, value):
+        self._GPA = value
+
+    # @property
+    # def play_badminton(self):
+    #     return self._play_badminton
+
+    # @play_badminton.setter
+    # def play_badminton(self, value):
+    #     self._play_badminton = value
+
+    def predict(self):
+        # Ensure all features are properly converted
+        self._satscore = stringToInt(self._satscore)
+        self._GPA = stringToInt(self._GPA)
+
+        varList = [self._satscore, self._GPA]
+
+        # Ensure the same number of features as the model expects
+
+        # Predicting the price
+        predicted_badminton = regressor.predict([varList])[0]
+        if predicted_badminton == 0:
+            string = 'no'
+        else:
+            string = 'yes'
+        return string
