@@ -10,14 +10,9 @@ api = Api(satgpacross_api)
 class SatgpacrossAPI:
     class _CRUD(Resource):
         def post(self):
-            print('alksdjfds')
+            print('i think it worked')
             data = request.get_json()
             satscore = data.get('satscore')
-            # gpa = data.get('GPA')
-
-            # if satscore is None or gpa is None:
-            #     return jsonify({"error": "Missing data"}), 400
-
             try:
                 # Attempt to convert the values to integers
                 satscore = int(satscore)
