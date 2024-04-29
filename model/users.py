@@ -237,7 +237,6 @@ class User(db.Model):
             "posts": [post.read() for post in self.posts],
             "favoritefood": self.favoritefood,
             "role": self.role,
-            "items": self.items,
             "points": self.points,
             "friendrq": self.friendrq
 
