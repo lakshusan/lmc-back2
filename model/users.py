@@ -8,10 +8,7 @@ from __init__ import app, db
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-''' Tutorial: https://www.sqlalchemy.org/library.html#tutorials, try to get into Python shell and follow along '''
-
-# Define the Post class to manage actions in 'posts' table,  with a relationship to 'users' table
+# Define the Post class to manage actions in 'posts' 'users' table
 class Post(db.Model):
     __tablename__ = 'posts'
 
@@ -19,7 +16,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     note = db.Column(db.Text, unique=False, nullable=False)
     image = db.Column(db.String, unique=False)
-    # Define a relationship in Notes Schema to userID who originates the note, many-to-one (many notes to one user)
+    # Define a relationship in Notes Schema to userID - many notes to one user
     userID = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # Constructor of a Notes object, initializes of instance variables within object
@@ -265,7 +262,7 @@ class User(db.Model):
                     print(items)
                     print(temp, "temp0")
                     temp.append(json.loads(items)[-1])
-                    print(json.loads(items)[-1], "als;kdfjds")
+                    print(json.loads(items)[-1], "user items")
                     print(temp, "temp")
                     sets = set(temp)
                     temp2 = []
@@ -285,7 +282,7 @@ class User(db.Model):
 
 """Database Creation and Testing """
 
-
+# Usernames by ChatGPT
 # Builds working data for testing
 def initUsers():
     with app.app_context():
