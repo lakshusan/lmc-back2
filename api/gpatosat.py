@@ -14,7 +14,6 @@ class GpatosatAPI:
             data = request.get_json()
             gpa = data.get('gpa')
             try:
-                # Attempt to convert the values to integers
                 # gpa = int(gpa)
                 gpa = float(gpa)
             except (TypeError, ValueError):
