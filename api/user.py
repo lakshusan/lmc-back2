@@ -76,6 +76,7 @@ class UserAPI:
             uid = body.get('uid') # get the UID (Know what to reference)
             dob = body.get('dob')
             items = body.get('items')
+            gpa = body.get('gpa')
             favoritefood = body.get('favoritefood')
             points = body.get('points')
             if dob is not None:
@@ -86,7 +87,7 @@ class UserAPI:
             users = User.query.all()
             for user in users:
                 if user.uid == uid:
-                    user.update(uid,'','', '', items, points)
+                    user.update(uid,'','', '', items, points, gpa)
             return f"{user.read()} Updated"
     
     class _Security(Resource):
